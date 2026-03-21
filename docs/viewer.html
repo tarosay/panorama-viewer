@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>360 Panorama Viewer</title>
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       width: 100%;
       height: 100%;
@@ -46,6 +48,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="info">ドラッグ: 回転 / ホイール: 拡大縮小</div>
   <div id="fallback">WebGL初期化に失敗しました。</div>
@@ -90,7 +93,7 @@
         const textureLoader = new THREE.TextureLoader();
         const texture = textureLoader.load(
           "./pano.jpg",
-          () => {},
+          () => { },
           undefined,
           (err) => {
             fallback.style.display = "flex";
@@ -156,7 +159,7 @@
       lat = Math.max(-85, Math.min(85, lat));
 
       const phi = THREE.MathUtils.degToRad(90 - lat);
-      const theta = THREE.MathUtils.degToRad(lon);
+      const theta = THREE.MathUtils.degToRad(lon + 180);
 
       const x = 500 * Math.sin(phi) * Math.cos(theta);
       const y = 500 * Math.cos(phi);
@@ -167,4 +170,5 @@
     }
   </script>
 </body>
+
 </html>
