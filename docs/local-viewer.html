@@ -749,19 +749,29 @@
       return { hFov: h, vFov: v };
     }
 
+    function getPerspectiveAspect(hFov, vFov) {
+      const hRad = THREE.MathUtils.degToRad(hFov);
+      const vRad = THREE.MathUtils.degToRad(vFov);
+      return Math.tan(hRad / 2) / Math.tan(vRad / 2);
+    }
+
     function getOutputDimensions(hFov, vFov) {
       if (!currentImageWidth || !currentImageHeight) {
         return { width: 0, height: 0, scale: 1, limited: false };
       }
 
-      const width = Math.max(1, Math.round(currentImageWidth * hFov / 360));
-      const height = Math.max(1, Math.round(currentImageHeight * vFov / 180));
+      const pixelsPerDegree = Math.min(currentImageWidth / 360, currentImageHeight / 180);
+      const aspect = getPerspectiveAspect(hFov, vFov);
+
+      const rawHeight = Math.max(1, Math.round(vFov * pixelsPerDegree));
+      const rawWidth = Math.max(1, Math.round(rawHeight * aspect));
+
       const maxEdge = 4096;
-      const scale = Math.min(1, maxEdge / Math.max(width, height));
+      const scale = Math.min(1, maxEdge / Math.max(rawWidth, rawHeight));
 
       return {
-        width: Math.max(1, Math.round(width * scale)),
-        height: Math.max(1, Math.round(height * scale)),
+        width: Math.max(1, Math.round(rawWidth * scale)),
+        height: Math.max(1, Math.round(rawHeight * scale)),
         scale,
         limited: scale < 1
       };
@@ -851,9 +861,7 @@
 
 
     async function renderViewToBlob(width, height, targetLon, targetLat, hFov, vFov) {
-      const hRad = THREE.MathUtils.degToRad(hFov);
-      const vRad = THREE.MathUtils.degToRad(vFov);
-      const aspect = Math.tan(hRad / 2) / Math.tan(vRad / 2);
+      const aspect = getPerspectiveAspect(hFov, vFov);
 
       let tempRenderer;
       try {
@@ -894,9 +902,7 @@
     }
 
     async function renderDirectionToBlob(width, height, direction, upVector, hFov, vFov) {
-      const hRad = THREE.MathUtils.degToRad(hFov);
-      const vRad = THREE.MathUtils.degToRad(vFov);
-      const aspect = Math.tan(hRad / 2) / Math.tan(vRad / 2);
+      const aspect = getPerspectiveAspect(hFov, vFov);
 
       let tempRenderer;
       try {
